@@ -46,8 +46,8 @@ void createMirror(node** ptrhead, node** ptrhead2)
 	{
 		head2 = new node;
 		head2->data = head->data;
-		createMirror(&head->left, &head2->left);
-		createMirror(&head->right, &head2->right);
+		createMirror(&head->left, &head2->right);
+		createMirror(&head->right, &head2->left);
 	}
 }
 
