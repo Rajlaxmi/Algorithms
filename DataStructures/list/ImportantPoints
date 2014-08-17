@@ -1,0 +1,16 @@
+1. Observe insert function properly
+2. In pairwise swap, observe the use of recursion. It can be used at multiple place.
+	Try to look for a pattern.
+	In recursive problems, also think in terms of base case and then regular case
+3. Always be careful in writing 
+4. in make_pair.. NULL cannot go so make node* curr = NULL and send curr  if yuo wish to
+5. Circular list important: print function be careful to print head before
+
+why is ti node* &head and not node& *head
+
+Questions:
+
+
+int n;
+int of 30 size, flip the bit at jth position
+n^=1<<(j%30);
