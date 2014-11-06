@@ -22,27 +22,7 @@
 using namespace std;
 int n, m;
 #define mx 100
-int weights[mx][mx], minDist[mx][mx];
-
-bool bellmanFord(int s) {
-	int i, j, k;
-	//bellman ford
-	for(k=1; k<n; k++) {
-		for(i=0; i<n; i++) {
-			for(j=0; j<n; j++) {
-				if(minDist[s][j] != INT_MAX && weights[j][i] != INT_MAX &&
-				 minDist[s][i] > minDist[s][j] + weights[j][i])
-					minDist[s][i] = minDist[s][j] + weights[j][i];
-			}
-		}
-	}
-	for(i=0; i<n; i++)
-		for(j=0; j<n; j++)
-			if(weights[j][i] != INT_MAX && minDist[s][j] != INT_MAX &&
-			minDist[s][i] > minDist[s][j] + weights[j][i])
-				return false;
-	return true;
-}
+int weights[mx][mx], tmp[mx][mx], minDist[mx][mx], parent[mx][mx];
 
 void print(int mat[mx][mx], int n, int m) {
 	int i, j;
@@ -56,23 +36,44 @@ void print(int mat[mx][mx], int n, int m) {
 	}
 }
 
+
 int main()
 {
-	int i, j, k, x, y, w, s;
+	int i, j, x, y, w, k;
 	cin>>n>>m;
+	
 	for(i=0; i<n; i++)
 		for(j=0; j<n; j++)
-			weights[i][j] = INT_MAX, minDist[i][j] = INT_MAX;
+			weights[i][j] = INT_MAX, parent[i][j] = -1;
+			
 	for(i=0; i<n; i++)
-		weights[i][i] = 0, minDist[i][i] = 0;
+		weights[i][i] = 0;
+		
 	for(i=0; i<m; i++) {
 		cin>>x>>y>>w;
 		weights[x-1][y-1] = w;
+		parent[x-1][y-1] = x-1;
 	}
-	cin>>s;
-	if(!bellmanFord(s))
-		cout<<"Negative Cycle Present"<<endl;
-	else
-		print(minDist, n, n);
+	for(i=0; i<n; i++)
+		for(j=0; j<n; j++)
+			minDist[i][j] = weights[i][j];
+	
+	//Floyd Warshall
+	for(k=0; k<n; k++) {
+		for(i=0; i<n; i++) {
+			for(j=0; j<n; j++) {
+				tmp[i][j] = minDist[i][j];
+				if(minDist[i][k] != INT_MAX && minDist[k][j] != INT_MAX && minDist[i][k]+minDist[k][j] < tmp[i][j]) {
+					tmp[i][j] = minDist[i][k]+minDist[k][j];
+					parent[i][j] = parent[k][j];
+				}
+			}
+		}
+		for(i=0; i<n; i++)
+			for(j=0; j<n; j++)
+				minDist[i][j] = tmp[i][j];
+	}
+	print(minDist, n, n);
+	
 	return 0;
 }

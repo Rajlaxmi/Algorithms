@@ -1,69 +1,82 @@
 #include <iostream>
-#include <vector>
-#include <climits>
+#include <string>
 #include <utility>
 #include <algorithm>
+#include <map>
+#include <vector>
 #include <queue>
-#define pii pair<int,int>
-#define addEdge(i, j, k) adjList[i].push_back(j); weight[i].push_back(k);
+#include <set>
+#include <stack>
+#include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <climits>
+#include <cstring>
+#define pii pair<int, int>
+#define ll long long int
+#define loop(i, n) for(i=0; i<n; i++)
+#define loopab(i, a, b) for(i=a; i<b; i++)
+#define pb push_back
+#define mk make_pair
 using namespace std;
-vector<vector<int> > adjList, weight;
-int n;
+#define mx 100
+int n, m;
+vector<vector<int> > vec, wt;
+int arr[mx];
 
-void buildGraph()
-{
-	addEdge(0, 1, 1);
-	addEdge(0, 2, 2);
-	addEdge(1, 3, 3);
-	addEdge(2, 3, 1);
-}
+struct cmp {
+	bool operator()(pii a, pii b) {
+		return a.second < b.second;
+	}
+};
 
-void dijkstra(int s, int* dist, int* par)
-{
-	for(int i=0; i<n; i++)
-		dist[i] = INT_MAX, par[i] = -1;
-	dist[s]	= 0;
-	set<pii> pq;
-	pq.insert(make_pair(0,s));
-	pii tp;
-	int pops = 0, pos, d;
-	while(!pq.empty() && pops<n)
-	{
-		tp = *pq.begin();
-		pq.erase(pq.begin());
-		pops++;
-		d = tp.first;
-		pos = tp.second;
-		for(int i=0; i<adjList[pos].size(); i++) {
-			if(dist[pos]+weight[pos][i] < dist[adjList[pos][i]]) {
-				dist[adjList[pos][i]] = dist[pos]+weight[pos][i];
-				par[adjList[pos][i]] = pos;
-				pq.push(make_pair(dist[adjList[pos][i]],adjList[pos][i]));
+void dijkstra(int s) {
+	priority_queue<pii, vector<pii>, cmp> pq; //by default max priority queue
+	pq.push(mk(s, 0));
+	int i, u, v, w;
+	for(i=0; i<n; i++)
+		arr[i] = INT_MAX;
+	arr[s] = 0;
+	pii pr;
+	
+	while(!pq.empty()) {
+		pr = pq.top();
+		u = pr.first;
+		pq.pop();
+		for(i=0; i<vec[u].size(); i++) {
+			v = vec[u][i];
+			if(arr[v] > arr[u] + wt[u][i]) {
+				arr[v] = arr[u] + wt[u][i];
+				pq.push(mk(v, arr[v]));
 			}
 		}
-		priority_queue<pii, vector<pii>, greater<pii> > copy(pq);
-		
-		while(!copy.empty())
-		{
-			tp = copy.top();
-			cout<<tp.first<<":"<<tp.second<<" ";
-			copy.pop();
-		}
-		cout<<endl;
 	}
+}
+
+void print(int arr[mx], int n) {
+	int i;
+	for(i=0; i<n; i++)
+		if(arr[i] == INT_MAX)
+			cout<<-1<<" ";
+		else
+			cout<<arr[i]<<" ";
+	cout<<endl;
 }
 
 int main()
 {
-	//cin>>n;
-	n = 4;
-	int dist[n], par[n], s=0;
-	adjList.resize(n);
-	weight.resize(n);
-	buildGraph();
-	dijkstra(s, dist, par);
-	for(int i=0; i<n; i++)
-		cout<<i<<" "<<dist[i]<<" "<<par[i]<<endl;
-		
+	int i, j, x, y, w, s;
+	cin>>n>>m;
+	vec.resize(n);
+	wt.resize(n);
+	for(i=0; i<m; i++) {
+		cin>>x>>y>>w;
+		vec[x-1].pb(y-1);
+		wt[x-1].pb(w);
+	}
+	cin>>s;
+	dijkstra(s);
+	print(arr, n);
 	return 0;
 }

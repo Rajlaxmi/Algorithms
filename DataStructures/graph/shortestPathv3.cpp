@@ -22,26 +22,24 @@
 using namespace std;
 int n, m;
 #define mx 100
-int weights[mx][mx], minDist[mx][mx];
+int weights[mx][mx], tmp[mx][mx], minDist[mx][mx];
 
-bool bellmanFord(int s) {
-	int i, j, k;
-	//bellman ford
-	for(k=1; k<n; k++) {
+void compute() {
+	int i, j, k, z;
+	for(z = 0; z < n-1; z++) {
 		for(i=0; i<n; i++) {
 			for(j=0; j<n; j++) {
-				if(minDist[s][j] != INT_MAX && weights[j][i] != INT_MAX &&
-				 minDist[s][i] > minDist[s][j] + weights[j][i])
-					minDist[s][i] = minDist[s][j] + weights[j][i];
+				tmp[i][j] = minDist[i][j];
+				for(k = 0; k<n; k++) {
+					if(minDist[i][k] != INT_MAX && weights[k][j] != INT_MAX)
+						tmp[i][j] = min(tmp[i][j], minDist[i][k] + weights[k][j]);
+				}
 			}
 		}
+		for(i=0; i<n; i++)
+			for(j=0; j<n; j++)
+				minDist[i][j] = tmp[i][j];
 	}
-	for(i=0; i<n; i++)
-		for(j=0; j<n; j++)
-			if(weights[j][i] != INT_MAX && minDist[s][j] != INT_MAX &&
-			minDist[s][i] > minDist[s][j] + weights[j][i])
-				return false;
-	return true;
 }
 
 void print(int mat[mx][mx], int n, int m) {
@@ -58,21 +56,23 @@ void print(int mat[mx][mx], int n, int m) {
 
 int main()
 {
-	int i, j, k, x, y, w, s;
+	int i, j, x, y, w;
 	cin>>n>>m;
 	for(i=0; i<n; i++)
 		for(j=0; j<n; j++)
-			weights[i][j] = INT_MAX, minDist[i][j] = INT_MAX;
+			weights[i][j] = INT_MAX;
 	for(i=0; i<n; i++)
-		weights[i][i] = 0, minDist[i][i] = 0;
+			weights[i][i] = 0;
 	for(i=0; i<m; i++) {
 		cin>>x>>y>>w;
 		weights[x-1][y-1] = w;
 	}
-	cin>>s;
-	if(!bellmanFord(s))
-		cout<<"Negative Cycle Present"<<endl;
-	else
-		print(minDist, n, n);
+	for(i=0; i<n; i++)
+		for(j=0; j<n; j++)
+			minDist[i][j] = weights[i][j];
+			
+	compute();
+	print(minDist, n, n);
 	return 0;
 }
+
